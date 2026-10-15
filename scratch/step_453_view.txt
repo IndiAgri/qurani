@@ -1,0 +1,24 @@
+Created At: 2026-10-14T10:32:06+07:00
+Completed At: 2026-10-14T10:32:07+07:00
+File Path: `file:///c:/UBIG/Pramagang/Duplikasi%20Qurani/Qurani-indi/qurani/src/components/marketplace/orders/marketplace-orders-page.tsx`
+Total Lines: 1265
+Total Bytes: 75756
+Showing lines 200 to 215
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+200: // Komponen utama untuk halaman Daftar Pesanan, menampilkan status pesanan murid (aktif, selesai, batal).
+201: export function MarketplaceOrdersPage() {
+202:     const { profile, userId: authUserId } = useAuth()
+203:     const { locale } = useI18n()
+204:     const [activeTab, setActiveTab] = useState("all")
+205: 
+206:     const [searchQuery, setSearchQuery] = useState("")
+207:     const [tempSearchQuery, setTempSearchQuery] = useState("")
+208:     const [walletBalance, setWalletBalance] = useState(0)
+209:     const [allOrders, setAllOrders] = useState<any[]>(
+210:         [...DUMMY_ORDERS].sort((a, b) => {
+211:             const dateA = new Date(a.date).getTime()
+212:             const dateB = new Date(b.date).getTime()
+213:             if (isNaN(dateA) && isNaN(dateB)) return 0
+214:             if (isNaN(dateA)) return 1
+215:             if (isNaN(dateB)) return -1
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.

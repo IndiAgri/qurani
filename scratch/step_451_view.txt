@@ -1,0 +1,16 @@
+Created At: 2026-10-14T10:31:58+07:00
+Completed At: 2026-10-14T10:31:58+07:00
+File Path: `file:///c:/UBIG/Pramagang/Duplikasi%20Qurani/Qurani-indi/qurani/src/components/marketplace/orders/marketplace-orders-page.tsx`
+Total Lines: 1265
+Total Bytes: 75756
+Showing lines 38 to 45
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+38: import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+39: import { cn } from "@/lib/utils"
+40: import Link from "next/link"
+41: import { useAuth } from "@/components/providers/auth-provider"
+42: import { useI18n } from "@/components/providers/i18n-provider"
+43: import {
+44:     Dialog,
+45:     DialogContent,
+The above content does NOT show the entire file contents. If you need to view any lines of the file which were not shown to complete your task, call this tool again to view those lines.
