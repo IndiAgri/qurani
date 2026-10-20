@@ -166,7 +166,7 @@ export function TrainerReview({ trainer, isOwner }: { trainer: any, isOwner?: bo
             </div>
 
             {/* Rating Summary Card */}
-            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 md:p-8 shadow-2xs">
                 <div className="flex flex-row gap-4 md:gap-6 items-center">
                     <div className="flex flex-col items-center gap-1 shrink-0 w-24">
                         <span className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white">{averageRating}</span>

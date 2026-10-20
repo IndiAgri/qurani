@@ -12,7 +12,7 @@ export function TeacherLayout({ children }: { children: React.ReactNode }) {
         <TeacherSidebar />
         <SidebarInset className="flex flex-col flex-1 min-w-0 bg-[#f8fafc]">
           <DashboardHeader />
-          <main className="flex-1 flex justify-center w-full bg-[#f8fafc] overflow-y-auto">
+          <main className="flex-1 w-full bg-[#f8fafc] overflow-y-auto">
             {children}
           </main>
         </SidebarInset>

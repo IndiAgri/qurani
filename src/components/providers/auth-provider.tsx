@@ -38,6 +38,12 @@ const defaultMockUser: UserProfile = {
   email: "fatkul@example.com",
   avatar: "/img/fatkul.jpg",
   role: "santri",
+  cityName: "Malang",
+  stateName: "Jawa Timur",
+  countryName: "Indonesia",
+  city: "Malang",
+  states: "Jawa Timur",
+  country: "Indonesia",
 };
 
 const AuthContext = createContext<AuthContextType>({
@@ -61,17 +67,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     try {
       const stored = localStorage.getItem("qurani_user");
+      let studentProfile: any = null;
+      try {
+        const sp = localStorage.getItem("qurani_student_profile");
+        if (sp) studentProfile = JSON.parse(sp);
+      } catch {}
+
       if (stored) {
         const parsed = JSON.parse(stored);
-        setUser(parsed);
+        const merged: UserProfile = {
+          ...parsed,
+          cityName: parsed.cityName || studentProfile?.city || "Malang",
+          stateName: parsed.stateName || studentProfile?.states || "Jawa Timur",
+          countryName: parsed.countryName || studentProfile?.country || "Indonesia",
+          city: parsed.city || studentProfile?.city || "Malang",
+          states: parsed.states || studentProfile?.states || "Jawa Timur",
+          country: parsed.country || studentProfile?.country || "Indonesia",
+        };
+        setUser(merged);
         setIsAuthenticated(true);
       } else {
-        setUser(null);
-        setIsAuthenticated(false);
+        const merged: UserProfile = {
+          ...defaultMockUser,
+          cityName: studentProfile?.city || defaultMockUser.cityName,
+          stateName: studentProfile?.states || defaultMockUser.stateName,
+          countryName: studentProfile?.country || defaultMockUser.countryName,
+          city: studentProfile?.city || defaultMockUser.city,
+          states: studentProfile?.states || defaultMockUser.states,
+          country: studentProfile?.country || defaultMockUser.country,
+        };
+        setUser(merged);
+        setIsAuthenticated(true);
       }
     } catch {
-      setUser(null);
-      setIsAuthenticated(false);
+      setUser(defaultMockUser);
+      setIsAuthenticated(true);
     } finally {
       setIsLoading(false);
     }

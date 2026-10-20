@@ -1,9 +1,9 @@
 import { TeacherLayout } from "@/components/layouts/teacher-layout";
-import { TeacherSubpageView } from "@/components/teachers/teacher-subpage-view";
+import { TeacherCertificatesView } from "@/components/teachers/teacher-certificates-view";
 
 export const metadata = {
   title: "Teacher Certificates | Qurani",
-  description: "View teacher certificates, sanad credentials, and teaching licenses.",
+  description: "Manage certificates issued to your students on Qurani.",
 };
 
 export default async function EnTeacherCertificatesPage({
@@ -14,7 +14,7 @@ export default async function EnTeacherCertificatesPage({
   const { id } = await params;
   return (
     <TeacherLayout>
-      <TeacherSubpageView type="certificates" teacherId={id} />
+      <TeacherCertificatesView teacherId={id} />
     </TeacherLayout>
   );
 }

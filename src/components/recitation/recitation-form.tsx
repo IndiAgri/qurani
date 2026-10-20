@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
-import { ChevronsUpDown, Check, Search, Plus } from "lucide-react";
+import { ChevronsUpDown, Check, Search, Plus, Info } from "lucide-react";
 import {
   Popover,
   PopoverContent,
@@ -74,7 +74,7 @@ interface RecitationFormProps {
 export function RecitationForm({ locale = "en" }: RecitationFormProps) {
   const router = useRouter();
 
-  const [reciterMode, setReciterMode] = React.useState<"friend" | "group">("group");
+  const [reciterMode, setReciterMode] = React.useState<"friend" | "group">("friend");
   const [selectedFriend, setSelectedFriend] = React.useState("");
   const [selectedGroup, setSelectedGroup] = React.useState("");
   const [selectedMember, setSelectedMember] = React.useState("");
@@ -132,8 +132,16 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
           { id: "mem-4", name: "Ahmad Fauzan", username: "@fauzan" },
         ];
 
+  // Form Validation Errors
+  const [errors, setErrors] = React.useState<{
+    friend?: string;
+    group?: string;
+    member?: string;
+    item?: string;
+  }>({});
+
   const handleReset = () => {
-    setReciterMode("group");
+    setReciterMode("friend");
     setSelectedFriend("");
     setSelectedGroup("");
     setSelectedMember("");
@@ -144,18 +152,46 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
     setSelectedPageId(null);
     setSelectedPraquranJilid("yanbua-1");
     setSelectedPraquranPage(1);
+    setErrors({});
   };
 
   const handleStart = () => {
-    if (reciterMode === "group") {
+    const newErrors: { friend?: string; group?: string; member?: string; item?: string } = {};
+
+    if (reciterMode === "friend") {
+      if (!selectedFriend) {
+        newErrors.friend = "Please select a friend";
+      }
+    } else {
       if (!selectedGroup) {
-        toast.error("Silakan pilih kelompok terlebih dahulu");
-        return;
+        newErrors.group = "Please select a group";
       }
       if (!selectedMember) {
-        toast.error("Silakan pilih anggota kelompok terlebih dahulu");
-        return;
+        newErrors.member = "Please select a member";
       }
+    }
+
+    if (recitationType === "pra-quran") {
+      if (!selectedPraquranJilid || !selectedPraquranPage) {
+        newErrors.item = "Please select an item";
+      }
+    } else if (displayMode === "surah") {
+      if (!selectedSurahId) {
+        newErrors.item = "Please select an item";
+      }
+    } else if (displayMode === "juz") {
+      if (!selectedJuzId) {
+        newErrors.item = "Please select an item";
+      }
+    } else if (displayMode === "page") {
+      if (!selectedPageId) {
+        newErrors.item = "Please select an item";
+      }
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors);
+      return;
     }
 
     // When in group mode, reciter is the selected member from the group
@@ -202,21 +238,27 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
               name="reciter"
               label="Friend"
               checked={reciterMode === "friend"}
-              onChange={() => setReciterMode("friend")}
+              onChange={() => {
+                setReciterMode("friend");
+                setErrors((prev) => ({ ...prev, friend: undefined, group: undefined, member: undefined }));
+              }}
             />
             <RecitationRadioItem
               name="reciter"
               label="Group"
               checked={reciterMode === "group"}
-              onChange={() => setReciterMode("group")}
+              onChange={() => {
+                setReciterMode("group");
+                setErrors((prev) => ({ ...prev, friend: undefined, group: undefined, member: undefined }));
+              }}
             />
           </div>
         </div>
 
         {/* Row 2: Friend or Group & Select Member Dropdown Comboboxes */}
         {reciterMode === "friend" ? (
-          <div className="flex flex-col sm:flex-row sm:items-center">
-            <span className="w-40 sm:w-44 text-sm font-medium text-gray-800 shrink-0 mb-2 sm:mb-0">
+          <div className="flex flex-col sm:flex-row sm:items-start">
+            <span className="w-40 sm:w-44 text-sm font-medium text-gray-800 shrink-0 mb-2 sm:mb-0 pt-2.5">
               Friend
             </span>
             <div className="flex-1">
@@ -232,7 +274,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                     <ChevronsUpDown className="size-4 text-gray-400 shrink-0 ml-2 stroke-[1.5]" />
                   </button>
                 </PopoverTrigger>
-                <PopoverContent className="w-[300px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
+                <PopoverContent className="w-[calc(100vw-36px)] max-w-[300px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
                   <Command>
                     <CommandInput placeholder="Search friend..." className="text-xs h-9" />
                     <CommandList className="max-h-56 p-1">
@@ -248,6 +290,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                               value={label}
                               onSelect={() => {
                                 setSelectedFriend(label);
+                                setErrors((prev) => ({ ...prev, friend: undefined }));
                                 setIsFriendOpen(false);
                               }}
                               className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -264,13 +307,19 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                   </Command>
                 </PopoverContent>
               </Popover>
+              {errors.friend && (
+                <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                  <Info className="size-3.5 text-orange-600 shrink-0" />
+                  <span>{errors.friend}</span>
+                </div>
+              )}
             </div>
           </div>
         ) : (
           <>
             {/* Row 2: Group Dropdown Combobox */}
-            <div className="flex flex-col sm:flex-row sm:items-center">
-              <span className="w-40 sm:w-44 text-sm font-medium text-gray-800 shrink-0 mb-2 sm:mb-0">
+            <div className="flex flex-col sm:flex-row sm:items-start">
+              <span className="w-40 sm:w-44 text-sm font-medium text-gray-800 shrink-0 mb-2 sm:mb-0 pt-2.5">
                 Group
               </span>
               <div className="flex-1">
@@ -286,7 +335,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                       <ChevronsUpDown className="size-4 text-gray-400 shrink-0 ml-2 stroke-[1.5]" />
                     </button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-[300px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
+                  <PopoverContent className="w-[calc(100vw-36px)] max-w-[300px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
                     <Command>
                       <CommandInput placeholder="Search group..." className="text-xs h-9" />
                       <CommandList className="max-h-56 p-1">
@@ -331,6 +380,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                                   onSelect={() => {
                                     setSelectedGroup(g.name);
                                     setSelectedMember("");
+                                    setErrors((prev) => ({ ...prev, group: undefined }));
                                     setIsGroupOpen(false);
                                   }}
                                   className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -361,13 +411,19 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                     </Command>
                   </PopoverContent>
                 </Popover>
+                {errors.group && (
+                  <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                    <Info className="size-3.5 text-orange-600 shrink-0" />
+                    <span>{errors.group}</span>
+                  </div>
+                )}
               </div>
             </div>
 
             {/* Row 3: Select Member Dropdown Combobox - ONLY shown when a group is selected! */}
             {selectedGroup && (
-              <div className="flex flex-col sm:flex-row sm:items-center">
-                <span className="w-40 sm:w-44 text-sm font-medium text-gray-800 shrink-0 mb-2 sm:mb-0">
+              <div className="flex flex-col sm:flex-row sm:items-start">
+                <span className="w-40 sm:w-44 text-sm font-medium text-gray-800 shrink-0 mb-2 sm:mb-0 pt-2.5">
                   Select Member
                 </span>
                 <div className="flex-1">
@@ -383,7 +439,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                         <ChevronsUpDown className="size-4 text-gray-400 shrink-0 ml-2 stroke-[1.5]" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[300px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
+                    <PopoverContent className="w-[calc(100vw-36px)] max-w-[300px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
                       <Command>
                         <CommandInput placeholder="Search member..." className="text-xs h-9" />
                         <CommandList className="max-h-56 p-1">
@@ -397,6 +453,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                                 value={m.name}
                                 onSelect={() => {
                                   setSelectedMember(m.name);
+                                  setErrors((prev) => ({ ...prev, member: undefined }));
                                   setIsMemberOpen(false);
                                 }}
                                 className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -415,6 +472,12 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                       </Command>
                     </PopoverContent>
                   </Popover>
+                  {errors.member && (
+                    <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                      <Info className="size-3.5 text-orange-600 shrink-0" />
+                      <span>{errors.member}</span>
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -431,19 +494,28 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
               name="type"
               label="Tahsin"
               checked={recitationType === "tahsin"}
-              onChange={() => setRecitationType("tahsin")}
+              onChange={() => {
+                setRecitationType("tahsin");
+                setErrors((prev) => ({ ...prev, item: undefined }));
+              }}
             />
             <RecitationRadioItem
               name="type"
               label="Tahfidz"
               checked={recitationType === "tahfidz"}
-              onChange={() => setRecitationType("tahfidz")}
+              onChange={() => {
+                setRecitationType("tahfidz");
+                setErrors((prev) => ({ ...prev, item: undefined }));
+              }}
             />
             <RecitationRadioItem
               name="type"
               label="Pra Quran"
               checked={recitationType === "pra-quran"}
-              onChange={() => setRecitationType("pra-quran")}
+              onChange={() => {
+                setRecitationType("pra-quran");
+                setErrors((prev) => ({ ...prev, item: undefined }));
+              }}
             />
           </div>
         </div>
@@ -470,19 +542,28 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                 name="display"
                 label="Surah"
                 checked={displayMode === "surah"}
-                onChange={() => setDisplayMode("surah")}
+                onChange={() => {
+                  setDisplayMode("surah");
+                  setErrors((prev) => ({ ...prev, item: undefined }));
+                }}
               />
               <RecitationRadioItem
                 name="display"
                 label="Juz"
                 checked={displayMode === "juz"}
-                onChange={() => setDisplayMode("juz")}
+                onChange={() => {
+                  setDisplayMode("juz");
+                  setErrors((prev) => ({ ...prev, item: undefined }));
+                }}
               />
               <RecitationRadioItem
                 name="display"
                 label="Page"
                 checked={displayMode === "page"}
-                onChange={() => setDisplayMode("page")}
+                onChange={() => {
+                  setDisplayMode("page");
+                  setErrors((prev) => ({ ...prev, item: undefined }));
+                }}
               />
             </div>
           </div>
@@ -522,6 +603,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                               onSelect={() => {
                                 setSelectedPraquranJilid(j.id);
                                 setSelectedPraquranPage(1);
+                                setErrors((prev) => ({ ...prev, item: undefined }));
                                 setIsPraquranJilidOpen(false);
                               }}
                               className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -563,6 +645,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                               value={`Halaman ${pageNum}`}
                               onSelect={() => {
                                 setSelectedPraquranPage(pageNum);
+                                setErrors((prev) => ({ ...prev, item: undefined }));
                                 setIsPraquranPageOpen(false);
                               }}
                               className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -580,6 +663,13 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                 </Popover>
               </div>
 
+              {errors.item && (
+                <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                  <Info className="size-3.5 text-orange-600 shrink-0" />
+                  <span>{errors.item}</span>
+                </div>
+              )}
+
               {/* Quick Pra Quran Pills */}
               <div className="flex flex-wrap items-center gap-2.5 pt-1">
                 {quickYanbua.map((item) => {
@@ -593,6 +683,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                       onClick={() => {
                         setSelectedPraquranJilid(item.jilid);
                         setSelectedPraquranPage(item.page);
+                        setErrors((prev) => ({ ...prev, item: undefined }));
                       }}
                       className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
                         isSelected
@@ -627,7 +718,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                         <ChevronsUpDown className="size-4 text-gray-400 shrink-0 ml-2 stroke-[1.5]" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[320px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
+                    <PopoverContent className="w-[calc(100vw-36px)] max-w-[320px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
                       <Command>
                         <CommandInput placeholder="Search Surah (1-114)" className="text-xs h-9" />
                         <CommandList className="max-h-60 p-1 overflow-y-auto">
@@ -641,6 +732,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                                 value={surah.name}
                                 onSelect={() => {
                                   setSelectedSurahId(surah.id);
+                                  setErrors((prev) => ({ ...prev, item: undefined }));
                                   setIsSurahOpen(false);
                                 }}
                                 className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -657,6 +749,13 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                     </PopoverContent>
                   </Popover>
 
+                  {errors.item && (
+                    <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                      <Info className="size-3.5 text-orange-600 shrink-0" />
+                      <span>{errors.item}</span>
+                    </div>
+                  )}
+
                   {/* Quick Surahs Pills (Al-Fatihah, Yasin, Al-Waqi'ah, Al-Mulk) */}
                   <div className="flex flex-wrap items-center gap-2.5 pt-1">
                     {quickSurahs.map((name) => {
@@ -667,7 +766,10 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                           key={name}
                           type="button"
                           onClick={() => {
-                            if (surahObj) setSelectedSurahId(surahObj.id);
+                            if (surahObj) {
+                              setSelectedSurahId(surahObj.id);
+                              setErrors((prev) => ({ ...prev, item: undefined }));
+                            }
                           }}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
                             isSelected
@@ -697,7 +799,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                         <ChevronsUpDown className="size-4 text-gray-400 shrink-0 ml-2 stroke-[1.5]" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[320px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
+                    <PopoverContent className="w-[calc(100vw-36px)] max-w-[320px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
                       <Command>
                         <CommandInput placeholder="Search Juz (1-30)" className="text-xs h-9" />
                         <CommandList className="max-h-60 p-1 overflow-y-auto">
@@ -711,6 +813,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                                 value={juz.name}
                                 onSelect={() => {
                                   setSelectedJuzId(juz.id);
+                                  setErrors((prev) => ({ ...prev, item: undefined }));
                                   setIsJuzOpen(false);
                                 }}
                                 className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -727,6 +830,13 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                     </PopoverContent>
                   </Popover>
 
+                  {errors.item && (
+                    <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                      <Info className="size-3.5 text-orange-600 shrink-0" />
+                      <span>{errors.item}</span>
+                    </div>
+                  )}
+
                   {/* Quick Juz Pills */}
                   <div className="flex flex-wrap items-center gap-2.5 pt-1">
                     {quickJuz.map((jId) => {
@@ -735,7 +845,10 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                         <button
                           key={`juz-${jId}`}
                           type="button"
-                          onClick={() => setSelectedJuzId(jId)}
+                          onClick={() => {
+                            setSelectedJuzId(jId);
+                            setErrors((prev) => ({ ...prev, item: undefined }));
+                          }}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
                             isSelected
                               ? "bg-[#00875a] text-white font-medium shadow-xs"
@@ -764,7 +877,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                         <ChevronsUpDown className="size-4 text-gray-400 shrink-0 ml-2 stroke-[1.5]" />
                       </button>
                     </PopoverTrigger>
-                    <PopoverContent className="w-[320px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
+                    <PopoverContent className="w-[calc(100vw-36px)] max-w-[320px] p-0 rounded-2xl border border-gray-100 shadow-xl bg-white" align="start">
                       <Command>
                         <CommandInput placeholder="Search Page (1-604)" className="text-xs h-9" />
                         <CommandList className="max-h-60 p-1 overflow-y-auto">
@@ -775,6 +888,7 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                                 value={`Page ${pg.id}`}
                                 onSelect={() => {
                                   setSelectedPageId(pg.id);
+                                  setErrors((prev) => ({ ...prev, item: undefined }));
                                   setIsPageOpen(false);
                                 }}
                                 className="text-xs px-3 py-2 cursor-pointer rounded-lg flex items-center justify-between"
@@ -791,6 +905,13 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                     </PopoverContent>
                   </Popover>
 
+                  {errors.item && (
+                    <div className="flex items-center gap-1.5 text-xs text-orange-600 mt-1.5 font-normal">
+                      <Info className="size-3.5 text-orange-600 shrink-0" />
+                      <span>{errors.item}</span>
+                    </div>
+                  )}
+
                   {/* Quick Page Pills */}
                   <div className="flex flex-wrap items-center gap-2.5 pt-1">
                     {quickPages.map((pgId) => {
@@ -799,7 +920,10 @@ export function RecitationForm({ locale = "en" }: RecitationFormProps) {
                         <button
                           key={`page-${pgId}`}
                           type="button"
-                          onClick={() => setSelectedPageId(pgId)}
+                          onClick={() => {
+                            setSelectedPageId(pgId);
+                            setErrors((prev) => ({ ...prev, item: undefined }));
+                          }}
                           className={`px-4 py-2 rounded-xl text-sm font-medium transition cursor-pointer ${
                             isSelected
                               ? "bg-[#00875a] text-white font-medium shadow-xs"

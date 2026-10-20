@@ -107,7 +107,7 @@ export function TeacherDashboardView({ teacherId = "1" }: { teacherId?: string }
   };
 
   return (
-    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 font-sans space-y-6 sm:space-y-8">
+    <div className="w-full px-6 lg:px-8 py-6 font-sans space-y-6 sm:space-y-8">
       {/* Top Row: Greeting & Lihat Jadwal Button */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">

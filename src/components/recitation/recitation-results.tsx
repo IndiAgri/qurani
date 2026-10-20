@@ -268,6 +268,60 @@ export interface RecitationRecord {
 
 export const DEFAULT_RECITATION_RECORDS: RecitationRecord[] = [
   {
+    id: "rec-via-16okt",
+    time: "16 Okt 2026, 14.07",
+    reciter: "via",
+    recipient: "fatkul",
+    recite: "Tahfidz Al-Fatihah 1-7",
+    result: "Very Good",
+    statusGrade: "mumtaz",
+    signature: "verified",
+    isSigned: true,
+    signedBy: "fatkul",
+    signedByUsername: "@fatkul",
+    signedAt: "16 Okt 2026, 14.10",
+    notes: "Alhamdulillah sangat baik dan lancar.",
+    duration: "4m 15s",
+    errorCount: 0,
+    markedErrors: [],
+  },
+  {
+    id: "rec-fatkul-8okt",
+    time: "8 Okt 2026, 15.42",
+    reciter: "fatkul",
+    recipient: "Virly",
+    recite: "Tahfidz Al-Baqarah 1-132",
+    result: "Weak",
+    statusGrade: "murajaah",
+    signature: "verified",
+    isSigned: true,
+    signedBy: "Virly",
+    signedByUsername: "@virly",
+    signedAt: "8 Okt 2026, 15.50",
+    notes: "Perlu bimbingan dan murajaah kembali.",
+    duration: "14m 20s",
+    errorCount: 4,
+    markedErrors: [],
+  },
+  {
+    id: "rec-refan-7okt",
+    time: "7 Okt 2026, 11.16",
+    reciter: "Refan",
+    recipient: "fatkul",
+    recite: "Tahsin Al-Kahfi 1-30",
+    result: "Very Good",
+    statusGrade: "mumtaz",
+    signature: "verified",
+    isSigned: true,
+    signedBy: "fatkul",
+    signedByUsername: "@fatkul",
+    signedAt: "7 Okt 2026, 11.25",
+    notes: "Alhamdulillah sangat baik.",
+    duration: "8m 40s",
+    errorCount: 0,
+    markedErrors: [],
+  },
+  {
     id: "rec-0",
     time: "15 Okt 2026, 08.47",
     reciter: "nanas nanas",
@@ -955,41 +1009,41 @@ export function RecitationResults({ refreshTrigger }: RecitationResultsProps) {
       lower.includes("100%")
     ) {
       return (
-        <span className="inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200/60">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200/80">
           {text}
         </span>
       );
     }
     if (lower.includes("very good")) {
       return (
-        <span className="inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-semibold text-green-600 bg-green-50 border border-green-200/60">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold text-emerald-600 bg-emerald-50 border border-emerald-200/80">
           {text}
         </span>
       );
     }
     if (lower.includes("good") || lower.includes("jayyid")) {
       return (
-        <span className="inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200/60">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold text-blue-600 bg-blue-50 border border-blue-200/80">
           {text}
         </span>
       );
     }
     if (lower.includes("pass")) {
       return (
-        <span className="inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-semibold text-cyan-600 bg-cyan-50 border border-cyan-200/60">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold text-cyan-600 bg-cyan-50 border border-cyan-200/80">
           {text}
         </span>
       );
     }
     if (lower.includes("weak")) {
       return (
-        <span className="inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200/60">
+        <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold text-amber-600 bg-amber-50 border border-amber-200/80">
           {text}
         </span>
       );
     }
     return (
-      <span className="inline-flex items-center px-3.5 py-0.5 rounded-full text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200/60">
+      <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200/80">
         {text}
       </span>
     );
@@ -1063,10 +1117,87 @@ export function RecitationResults({ refreshTrigger }: RecitationResultsProps) {
 
   return (
     <div className="space-y-4 pt-4">
-      {/* Header and Filter Buttons */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      {/* Mobile Title Row (< md): Title and Filter Button */}
+      <div className="flex md:hidden items-center justify-between">
+        <h2 className="text-xl font-bold text-[#1e293b] tracking-tight">
+          Recitation Results
+        </h2>
+
+        {/* Filter Funnel Icon Button */}
+        <button
+          type="button"
+          onClick={() => {
+            setDraftFromDate(appliedFromDate);
+            setDraftToDate(appliedToDate);
+            setDraftRecipient(appliedRecipient);
+            setDraftType(appliedType);
+            setDraftMemorizationType(appliedMemorizationType);
+            setIsFilterModalOpen(true);
+          }}
+          className={`p-2.5 rounded-xl border transition-all cursor-pointer shadow-2xs relative ${
+            hasActiveAppliedFilters
+              ? "border-[#00875a] bg-emerald-50 text-[#00875a]"
+              : "border-gray-200/90 bg-white hover:bg-gray-50 text-gray-500"
+          }`}
+          title="Filter options"
+        >
+          <Filter className="size-4" />
+          {hasActiveAppliedFilters && (
+            <span className="absolute -top-1 -right-1 size-2 rounded-full bg-[#00875a] ring-2 ring-white" />
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Segmented Filter Container (< md) matching reference screenshot */}
+      <div className="md:hidden rounded-2xl border border-gray-200/90 bg-white p-2 shadow-2xs space-y-2">
+        {/* All button (full width) */}
+        <button
+          type="button"
+          onClick={() => setFilter("all")}
+          className={`w-full flex items-center justify-center gap-2 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer ${
+            filter === "all"
+              ? "bg-[#00875a] text-white shadow-xs"
+              : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200/80"
+          }`}
+        >
+          <Users className="size-4" />
+          <span>All</span>
+        </button>
+
+        {/* 2nd row: Reciter and Recipient */}
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            onClick={() => setFilter("reciter")}
+            className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer ${
+              filter === "reciter"
+                ? "bg-[#00875a] text-white shadow-xs"
+                : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200/80"
+            }`}
+          >
+            <User className="size-4" />
+            <span>Reciter</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setFilter("recipient")}
+            className={`w-full flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-sm font-semibold transition cursor-pointer ${
+              filter === "recipient"
+                ? "bg-[#00875a] text-white shadow-xs"
+                : "bg-white hover:bg-gray-50 text-gray-700 border border-gray-200/80"
+            }`}
+          >
+            <Users className="size-4" />
+            <span>Recipient</span>
+          </button>
+        </div>
+      </div>
+
+      {/* Desktop Header Row (hidden on mobile, flex on md+) */}
+      <div className="hidden md:flex md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-xl font-bold text-[#1e293b] tracking-tight">
+          <h2 className="text-xl md:text-2xl font-bold text-[#1e293b] tracking-tight">
             Recitation Results
           </h2>
         </div>
@@ -1117,7 +1248,7 @@ export function RecitationResults({ refreshTrigger }: RecitationResultsProps) {
             </button>
           </div>
 
-          {/* Filter Funnel Icon Button (Opens Dialog) */}
+          {/* Filter Funnel Icon Button */}
           <button
             type="button"
             onClick={() => {
@@ -1143,8 +1274,97 @@ export function RecitationResults({ refreshTrigger }: RecitationResultsProps) {
         </div>
       </div>
 
-      {/* Results Table */}
-      <div className="rounded-2xl border border-gray-100 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
+      {/* Mobile Card-based List (< md) matching reference screenshot */}
+      <div className="md:hidden space-y-4">
+        {filteredRecords.length > 0 ? (
+          <>
+            {filteredRecords.map((r) => (
+              <div
+                key={`mobile-${r.id}`}
+                className="bg-white rounded-2xl p-5 border border-gray-100 shadow-[0_2px_12px_rgba(0,0,0,0.03)] space-y-3"
+              >
+                {/* Time */}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-normal">Time:</span>
+                  <span className="text-gray-900 font-normal">{r.time}</span>
+                </div>
+
+                {/* Reciter */}
+                {filter !== "reciter" && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500 font-normal">Reciter:</span>
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(getUserProfilePath(r.reciter));
+                      }}
+                      className="text-gray-900 font-normal hover:text-blue-600 transition-colors cursor-pointer"
+                    >
+                      {r.reciter}
+                    </span>
+                  </div>
+                )}
+
+                {/* Recipient */}
+                {filter !== "recipient" && (
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-gray-500 font-normal">Recipient:</span>
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        router.push(getUserProfilePath(r.recipient));
+                      }}
+                      className="text-gray-900 font-normal hover:text-blue-600 transition-colors cursor-pointer"
+                    >
+                      {r.recipient}
+                    </span>
+                  </div>
+                )}
+
+                {/* Recite */}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-normal">Recite:</span>
+                  <span className="text-gray-900 font-normal">{r.recite}</span>
+                </div>
+
+                {/* Result */}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-normal">Result:</span>
+                  <div>{getResultBadge(r)}</div>
+                </div>
+
+                {/* Signature */}
+                <div className="flex items-center justify-between text-sm">
+                  <span className="text-gray-500 font-normal">Signature:</span>
+                  <div>
+                    <div className="size-5.5 rounded-full border border-gray-300 flex items-center justify-center text-gray-400">
+                      <Check className="size-3.5 text-gray-400 stroke-[1.8]" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom: Detail button */}
+                <div className="pt-1.5">
+                  <button
+                    type="button"
+                    onClick={() => router.push(`/${currentLocale}/recitation/recap/${r.id}`)}
+                    className="w-full py-2.5 rounded-xl bg-[#00875a] hover:bg-[#00734c] active:scale-[0.99] text-white font-medium text-sm transition cursor-pointer text-center"
+                  >
+                    Detail
+                  </button>
+                </div>
+              </div>
+            ))}
+          </>
+        ) : (
+          <div className="bg-white rounded-2xl p-8 text-center text-xs text-gray-400 border border-gray-100">
+            Belum ada data setoran yang cocok dengan filter ini.
+          </div>
+        )}
+      </div>
+
+      {/* Desktop Results Table (hidden on mobile, block on md+) */}
+      <div className="hidden md:block rounded-2xl border border-gray-100 bg-white shadow-[0_2px_12px_rgba(0,0,0,0.03)] overflow-hidden">
         <Table>
           <TableHeader>
             <TableRow className="bg-[#00875a] hover:bg-[#00875a] border-none">

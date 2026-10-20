@@ -57,7 +57,7 @@ const getBadgeStyles = (t: any, type?: string, name: string = "Guru") => {
 }
 
 export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, router, onReviewClick }: TrainerProfileHeaderProps) {
-    const { t } = useI18n()
+    const { t, locale } = useI18n()
 
     // Dynamic rating calculation
     const [dynamicRating, setDynamicRating] = useState(trainer.rating || "0.0")
@@ -114,11 +114,11 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                     <Button
                         variant="secondary"
                         size="sm"
-                        className="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white border border-white/20 shadow-lg rounded-xl h-9 px-4 text-xs font-bold transition-all"
+                        className="bg-white/20 backdrop-blur-md hover:bg-white/30 text-white border border-white/20 shadow-lg rounded-xl h-9 px-4 text-xs font-bold transition-all cursor-pointer"
                         onClick={() => router.back()}
                     >
                         <ArrowLeft className="mr-1.5 h-4 w-4" />
-                        {t("marketplace_detail.back_button", "Kembali")}
+                        {locale === 'en' ? "Back" : t("marketplace_detail.back_button", "Kembali")}
                     </Button>
                 </div>
             </div>
@@ -181,7 +181,7 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                                 <div className="flex flex-wrap items-center justify-center md:justify-start gap-x-3 gap-y-2 text-slate-500 dark:text-slate-400 font-bold text-xs md:text-sm mt-2 md:mt-0">
                                     <div className="flex items-center gap-2">
                                         <Briefcase className="h-4 w-4 text-emerald-600" />
-                                        <span>{t("marketplace_detail.guru_prefix", "Guru")} {trainer.specialization[0]}</span>
+                                        <span>{locale === 'en' ? "Teacher of" : t("marketplace_detail.guru_prefix", "Guru")} {trainer.specialization[0]}</span>
                                     </div>
                                     <div 
                                         className="flex items-center gap-1 bg-yellow-50 dark:bg-yellow-900/20 text-yellow-700 dark:text-yellow-400 px-2 py-0.5 rounded-full font-black cursor-pointer hover:bg-yellow-100 dark:hover:bg-yellow-900/40 transition-colors"
@@ -200,7 +200,9 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                                             </Tooltip>
                                         </TooltipProvider>
                                         {dynamicRating}
-                                        <span className="text-yellow-600/60 font-bold ml-1 text-[10px] md:text-xs">{t("marketplace_detail.reviews_count", "({{count}} Ulasan)", { count: dynamicReviewCount.toString() })}</span>
+                                        <span className="text-yellow-600/60 font-bold ml-1 text-[10px] md:text-xs">
+                                            {locale === 'en' ? `(${dynamicReviewCount} Reviews)` : t("marketplace_detail.reviews_count", `(${dynamicReviewCount} Ulasan)`)}
+                                        </span>
                                     </div>
 
                                     {/* Recommendation Badge */}
@@ -220,14 +222,16 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                                                 </TooltipContent>
                                             </Tooltip>
                                         </TooltipProvider>
-                                        <span className="text-[10px] md:text-xs ml-0.5 capitalize">Direkomendasikan</span>
+                                        <span className="text-[10px] md:text-xs ml-0.5 capitalize">
+                                            {locale === 'en' ? "Recommended" : "Direkomendasikan"}
+                                        </span>
                                         <span className="text-emerald-600/70 font-bold ml-1 text-[10px] md:text-xs">({recommendationCount})</span>
                                     </div>
                                 </div>
                             </div>
 
                             {/* Action Buttons Row */}
-                            <div className="flex items-center justify-center md:justify-start gap-2 w-full md:w-auto mt-4 md:mt-0 shrink-0">
+                            <div className="flex items-center justify-center md:justify-start gap-2.5 w-full md:w-auto mt-4 md:mt-0 shrink-0">
                                 <TooltipProvider>
                                     <Tooltip>
                                         <TooltipTrigger asChild>
@@ -235,7 +239,7 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                                                 <FavoriteButton
                                                     targetType="teacher"
                                                     targetId={trainer.id}
-                                                    className={cn(buttonVariants({ variant: "outline", size: "icon" }), "text-slate-500 dark:text-slate-400")}
+                                                    className="h-10 w-10 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-gray-800 hover:bg-slate-50 dark:hover:bg-slate-700 flex items-center justify-center text-slate-500 shadow-2xs transition active:scale-95"
                                                     iconClassName="w-4 h-4"
                                                 />
                                             </div>
@@ -246,11 +250,11 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                                     </Tooltip>
 
                                     <Button
-                                        className="shrink-0"
+                                        className="h-10 px-5 bg-[#00875a] hover:bg-[#00734c] text-white font-semibold text-sm rounded-xl flex items-center gap-2 shadow-xs transition active:scale-95 cursor-pointer shrink-0"
                                         onClick={() => setIsChatOpen(true)}
                                     >
                                         <MessageSquare className="w-4 h-4" />
-                                        {t("marketplace_detail.hubungi_guru", "Hubungi Guru")}
+                                        <span>{locale === 'en' ? "Contact Teacher" : t("marketplace_detail.hubungi_guru", "Hubungi Guru")}</span>
                                     </Button>
                                 </TooltipProvider>
                             </div>
@@ -284,7 +288,9 @@ export function TrainerProfileHeader({ trainer, liked, setLiked, setIsChatOpen, 
                                         <p className="text-xs font-bold">{t("marketplace_detail.experience_label", "Pengalaman Mengajar")}</p>
                                     </TooltipContent>
                                 </Tooltip>
-                                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">{t("marketplace_detail.experience_years", "{{count}} Tahun", { count: trainer.experience.toString() })}</span>
+                                <span className="text-xs font-bold text-slate-600 dark:text-slate-300">
+                                    {locale === 'en' ? `${trainer.experience} Years` : t("marketplace_detail.experience_years", "{{count}} Tahun", { count: trainer.experience.toString() })}
+                                </span>
                             </div>
                             <div className="flex items-center gap-2">
                                 <Tooltip>

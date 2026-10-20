@@ -30,7 +30,7 @@ export function TeacherSettingsView({ teacherId = "1" }: { teacherId?: string })
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 font-sans space-y-6">
+    <div className="w-full px-6 lg:px-8 py-6 font-sans space-y-6">
       {/* Header */}
       <div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">

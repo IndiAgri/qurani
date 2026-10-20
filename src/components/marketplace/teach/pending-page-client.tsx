@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { StatusPengajuan, PengajuanStatus } from "./status-pengajuan";
 import { SubmittedFormData } from "./form-register";
 import { Loader2, GraduationCap, Settings, X } from "lucide-react";
+import { toast } from "sonner";
 
 export function PendingPageClient() {
   const router = useRouter();
@@ -75,6 +76,12 @@ export function PendingPageClient() {
     if (s !== "pending") {
        setIsCanceled(false);
        sessionStorage.setItem("teacher_is_canceled", "false");
+    }
+
+    if (s === "konfirmasi" || s === "jadwal_seleksi") {
+      toast.success("Pengajuan Disetujui Admin!", {
+        description: "Notifikasi jadwal wawancara telah berhasil dikirimkan ke email guru.",
+      });
     }
   };
 

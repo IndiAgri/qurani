@@ -1,9 +1,9 @@
 import { TeacherLayout } from "@/components/layouts/teacher-layout";
-import { TeacherSubpageView } from "@/components/teachers/teacher-subpage-view";
+import { TeacherCertificatesView } from "@/components/teachers/teacher-certificates-view";
 
 export const metadata = {
   title: "Sertifikat Guru | Qurani",
-  description: "Daftar sertifikat keilmuan dan sanad Al-Quran pengajar.",
+  description: "Kelola sertifikat yang Anda terbitkan kepada murid.",
 };
 
 export default async function IdTeacherCertificatesPage({
@@ -14,7 +14,7 @@ export default async function IdTeacherCertificatesPage({
   const { id } = await params;
   return (
     <TeacherLayout>
-      <TeacherSubpageView type="certificates" teacherId={id} />
+      <TeacherCertificatesView teacherId={id} />
     </TeacherLayout>
   );
 }

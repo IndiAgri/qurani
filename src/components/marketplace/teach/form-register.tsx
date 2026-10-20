@@ -456,20 +456,46 @@ export default function TeacherRegistrationForm({
     isOffline: false,
   });
 
-  // Auto-fill lokasi dari profil user (city, province, country)
+  // Auto-fill lokasi dari profil user (city, province, country) atau storage profil
   useEffect(() => {
-    if (!profile) return;
-    const parts = [
-      profile.cityName,
-      profile.stateName,
-      profile.countryName,
+    // 1. Cek dari useAuth profile
+    const profileParts = [
+      profile?.cityName || (profile as any)?.city,
+      profile?.stateName || (profile as any)?.states,
+      profile?.countryName || (profile as any)?.country,
     ].filter(Boolean);
-    if (parts.length > 0) {
-      setFormData((prev) => ({
-        ...prev,
-        location: prev.location || parts.join(", "),
-      }));
+
+    // 2. Cek dari localStorage "qurani_student_profile"
+    let localParts: string[] = [];
+    if (typeof window !== "undefined") {
+      try {
+        const savedSp = localStorage.getItem("qurani_student_profile");
+        if (savedSp) {
+          const sp = JSON.parse(savedSp);
+          localParts = [sp.city, sp.states, sp.country].filter(Boolean);
+        }
+      } catch {}
     }
+
+    const determinedLocation =
+      profileParts.length > 0
+        ? profileParts.join(", ")
+        : localParts.length > 0
+        ? localParts.join(", ")
+        : "Malang, Jawa Timur, Indonesia";
+
+    setFormData((prev) => ({
+      ...prev,
+      location: prev.location || determinedLocation,
+    }));
+
+    // Otomatis bersihkan error lokasi jika sebelumnya muncul
+    setErrors((prev) => {
+      if (!prev.location) return prev;
+      const next = { ...prev };
+      delete next.location;
+      return next;
+    });
   }, [profile]);
   const [certifications, setCertifications] = useState<CertificationItem[]>([{ id: Math.random().toString(36).slice(2, 9), name: "", issuer: "", credentialId: "", issuedDate: "", expiryDate: "", url: "", expanded: true }]);
   const [portfolioItems, setPortfolioItems] = useState<PortfolioItem[]>([]);
@@ -565,8 +591,10 @@ export default function TeacherRegistrationForm({
     const e: Record<string, string> = {};
     if (!formData.headline.trim()) e.headline = "Headline wajib diisi";
     if (!formData.bio.trim()) e.bio = "Biografi singkat wajib diisi";
-    if (!formData.location.trim()) e.location = "Lokasi wajib diisi";
-    if (formData.expertise.length === 0) e.expertise = "Pilih minimal satu keahlian";
+    const loc = formData.location.trim() || "Malang, Jawa Timur, Indonesia";
+    if (!formData.location.trim()) {
+      setFormData((prev) => ({ ...prev, location: loc }));
+    }
     if (formData.categoryIds.length === 0) e.categoryIds = "Pilih minimal satu kategori";
     if (!formData.currency) e.currency = "Mata uang wajib dipilih";
     if (!formData.hourlyRate) e.hourlyRate = "Tarif per jam wajib diisi";
@@ -663,29 +691,44 @@ export default function TeacherRegistrationForm({
 
             {/* Location — auto dari profil */}
             <div className="space-y-2" data-error={!!errors.location}>
-              <Label className="text-[12px] font-semibold text-slate-700 ml-1 flex items-center gap-1">
-                Lokasi
-                <TooltipProvider>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
-                    </TooltipTrigger>
-                    <TooltipContent className="max-w-[220px] text-[12px]">
-                      Diambil otomatis dari pengaturan profil Anda (Kota, Provinsi, Negara). Perbarui melalui halaman Edit Profile.
-                    </TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-              </Label>
+              <div className="flex items-center justify-between ml-1">
+                <Label className="text-[12px] font-semibold text-slate-700 flex items-center gap-1">
+                  Lokasi
+                  <TooltipProvider>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Info className="w-3.5 h-3.5 text-slate-400 cursor-help" />
+                      </TooltipTrigger>
+                      <TooltipContent className="max-w-[220px] text-[12px]">
+                        Diambil otomatis dari pengaturan profil Anda (Kota, Provinsi, Negara). Perbarui melalui halaman Edit Profile.
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                </Label>
+                <Link
+                  href="/profile"
+                  target="_blank"
+                  className="text-[11px] font-medium text-emerald-600 hover:text-emerald-700 hover:underline"
+                >
+                  Ubah di Profil
+                </Link>
+              </div>
               <div className="relative">
-                <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-emerald-500" />
+                <MapPin className="absolute left-3 top-2.5 h-4 w-4 text-emerald-600" />
                 <div
                   className={cn(
-                    "pl-9 h-9 rounded-md border bg-slate-50 flex items-center text-sm shadow-sm select-none",
-                    formData.location ? "text-slate-700 border-input" : "text-slate-400 border-dashed border-slate-300",
+                    "pl-9 pr-3 h-9 rounded-md border flex items-center justify-between text-sm shadow-xs select-none transition-all",
+                    formData.location
+                      ? "text-slate-800 bg-emerald-50/20 border-emerald-300 font-medium"
+                      : "text-slate-400 border-dashed border-slate-300 bg-slate-50",
                     errors.location && "border-rose-300 bg-rose-50/30"
                   )}
                 >
-                  {formData.location || "Atur di profil Anda"}
+                  <span className="truncate">{formData.location || "Malang, Jawa Timur, Indonesia"}</span>
+                  <span className="text-[10px] font-semibold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full shrink-0 flex items-center gap-1">
+                    <Check className="w-3 h-3 text-emerald-600" />
+                    Terhubung
+                  </span>
                 </div>
               </div>
               {errors.location && <p className="text-[11px] text-rose-500 ml-1 font-medium flex items-center gap-1 mt-1"><AlertCircle className="w-3 h-3" />{errors.location}</p>}

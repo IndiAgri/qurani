@@ -431,8 +431,8 @@ export function RecitationReader({
   return (
     <div className="flex flex-col min-h-screen w-full bg-white select-none">
       {/* Top Action Bar (Matching Screenshot 1 & 3) */}
-      <div className="flex items-center justify-between px-6 py-3.5 border-b border-gray-100 bg-white sticky top-0 z-30">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-gray-100 bg-white sticky top-0 z-30">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={toggleSidebar}
@@ -447,7 +447,7 @@ export function RecitationReader({
         <button
           type="button"
           onClick={handleFinish}
-          className="px-8 py-2 rounded-xl bg-[#00875a] hover:bg-[#00754e] text-white font-medium text-sm shadow-2xs transition cursor-pointer"
+          className="px-5 sm:px-8 py-1.5 sm:py-2 rounded-xl bg-[#00875a] hover:bg-[#00754e] active:scale-95 text-white font-medium text-xs sm:text-sm shadow-2xs transition cursor-pointer"
         >
           Finish
         </button>

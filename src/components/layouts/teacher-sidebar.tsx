@@ -202,8 +202,13 @@ export function TeacherSidebar() {
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger className="w-full flex items-center gap-2.5 p-2 rounded-xl hover:bg-gray-100/80 transition-all text-left focus:outline-none cursor-pointer">
-                <div className="size-8 rounded-full bg-[#6366f1] text-white flex items-center justify-center font-bold text-sm shrink-0 shadow-xs">
-                  F
+                <div className="relative size-8 rounded-full overflow-hidden border border-gray-200 shrink-0">
+                  <Image
+                    src="/img/fatkul.jpg"
+                    alt="fatkul"
+                    fill
+                    className="object-cover"
+                  />
                 </div>
                 <div className="grid flex-1 text-left text-xs leading-tight ml-1">
                   <span className="truncate font-semibold text-gray-900">

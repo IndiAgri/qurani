@@ -20,6 +20,7 @@ import { useRouter } from "next/navigation"
 import { useI18n } from "@/components/providers/i18n-provider"
 import { RATING_DIST, METHOD_DESCRIPTIONS } from "@/data/trainers-data"
 import { TrainerReview } from "./trainer-review"
+import { cn } from "@/lib/utils"
 
 interface TrainerContentMenuProps {
     trainer: any
@@ -66,43 +67,78 @@ export function TrainerContentMenu({ trainer, setPreviewItem, activeTab = "info"
         return (match && match[2].length === 11) ? `https://www.youtube.com/embed/${match[2]}` : url
     }
 
+    const isInfoActive = activeTab === "info"
+    const isGalleryActive = activeTab === "gallery"
+    const isReviewsActive = activeTab === "reviews"
+
     return (
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="w-full bg-white dark:bg-gray-800 border border-slate-200 dark:border-slate-700 rounded-xl h-12 p-1 shadow-sm mb-5">
-                <TabsTrigger value="info" className="flex-1 rounded-lg h-9 text-xs font-bold data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-md gap-1.5 transition-all">
-                    <BookOpen className="h-3.5 w-3.5" />
-                    {t("marketplace_detail.tab_profil", "Profil")}
+            <TabsList className="w-full bg-white dark:bg-gray-800 border border-slate-200/90 dark:border-slate-700 rounded-2xl p-1.5 shadow-2xs mb-5 flex items-center gap-1.5 h-auto">
+                <TabsTrigger
+                    value="info"
+                    className={cn(
+                        "flex-1 flex items-center justify-center rounded-xl py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold gap-2 transition-all cursor-pointer h-10",
+                        "data-active:!bg-[#00875a] data-active:!text-white data-active:!shadow-xs data-[state=active]:!bg-[#00875a] data-[state=active]:!text-white",
+                        isInfoActive
+                            ? "!bg-[#00875a] !text-white shadow-xs"
+                            : "!bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white"
+                    )}
+                >
+                    <BookOpen className="h-4 w-4" />
+                    <span>{locale === 'en' ? "Profile" : t("marketplace_detail.tab_profil", "Profil")}</span>
                 </TabsTrigger>
-                <TabsTrigger value="gallery" className="flex-1 rounded-lg h-9 text-xs font-bold data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-md gap-1.5 transition-all">
-                    <ImageIcon className="h-3.5 w-3.5" />
-                    {t("marketplace_detail.tab_galeri", "Galeri")}
+                <TabsTrigger
+                    value="gallery"
+                    className={cn(
+                        "flex-1 flex items-center justify-center rounded-xl py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold gap-2 transition-all cursor-pointer h-10",
+                        "data-active:!bg-[#00875a] data-active:!text-white data-active:!shadow-xs data-[state=active]:!bg-[#00875a] data-[state=active]:!text-white",
+                        isGalleryActive
+                            ? "!bg-[#00875a] !text-white shadow-xs"
+                            : "!bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white"
+                    )}
+                >
+                    <ImageIcon className="h-4 w-4" />
+                    <span>{locale === 'en' ? "Gallery" : t("marketplace_detail.tab_galeri", "Galeri")}</span>
                 </TabsTrigger>
-                <TabsTrigger value="reviews" className="flex-1 rounded-lg h-9 text-xs font-bold data-[state=active]:bg-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-md gap-1.5 transition-all">
-                    <Star className="h-3.5 w-3.5" />
-                    {t("marketplace_detail.tab_ulasan", "Ulasan")}
+                <TabsTrigger
+                    value="reviews"
+                    className={cn(
+                        "flex-1 flex items-center justify-center rounded-xl py-2 px-3 sm:px-4 text-xs sm:text-sm font-semibold gap-2 transition-all cursor-pointer h-10",
+                        "data-active:!bg-[#00875a] data-active:!text-white data-active:!shadow-xs data-[state=active]:!bg-[#00875a] data-[state=active]:!text-white",
+                        isReviewsActive
+                            ? "!bg-[#00875a] !text-white shadow-xs"
+                            : "!bg-transparent text-slate-600 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white"
+                    )}
+                >
+                    <Star className="h-4 w-4" />
+                    <span>{locale === 'en' ? "Reviews" : t("marketplace_detail.tab_ulasan", "Ulasan")}</span>
                 </TabsTrigger>
             </TabsList>
 
             {/* ===== TAB: INFORMASI ===== */}
             <TabsContent value="info" className="space-y-6 mt-0">
                 {/* Tentang Pengajar */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 md:p-8 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 md:p-8 shadow-2xs">
                     <div className="flex items-center gap-2.5 mb-3">
                         <div className="w-8 h-8 rounded-xl bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center">
                             <Quote className="h-4 w-4 text-emerald-600" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">{t("marketplace_detail.about_teacher", "Tentang Guru")}</h3>
+                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                            {locale === 'en' ? "ABOUT TEACHER" : t("marketplace_detail.about_teacher", "Tentang Guru")}
+                        </h3>
                     </div>
                     <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{trainer.bio}</p>
                 </div>
 
                 {/* Tentang Kursus */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 md:p-8 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 md:p-8 shadow-2xs">
                     <div className="flex items-center gap-2.5 mb-3">
                         <div className="w-8 h-8 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
                             <BookOpen className="h-4 w-4 text-blue-600" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">{t("marketplace_detail.tab_kurikulum", "Kurikulum")}</h3>
+                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                            {locale === 'en' ? "CURRICULUM" : t("marketplace_detail.tab_kurikulum", "Kurikulum")}
+                        </h3>
                     </div>
                     <p className="text-sm text-slate-600 dark:text-slate-300 leading-relaxed">
                         {trainer.courseDescription || t("marketplace_detail.course_desc_fallback", `Kursus ini dirancang untuk membantu Anda menguasai {{specialization}} dengan bimbingan langsung dari {{name}}. Setiap sesi berlangsung selama 60 menit secara online melalui video call, dengan materi yang disesuaikan dengan kemampuan dan kebutuhan masing-masing santri.`, { specialization: trainer.specialization.join(', '), name: trainer.name })}
@@ -110,12 +146,14 @@ export function TrainerContentMenu({ trainer, setPreviewItem, activeTab = "info"
                 </div>
 
                 {/* Metode Pembelajaran */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 md:p-8 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 md:p-8 shadow-2xs">
                     <div className="flex items-center gap-2.5 mb-4">
                         <div className="w-8 h-8 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center">
                             <GraduationCap className="h-4 w-4 text-teal-600" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">{t("marketplace_detail.teaching_methods", "Metode Mengajar")}</h3>
+                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                            {locale === 'en' ? "TEACHING METHODS" : t("marketplace_detail.teaching_methods", "Metode Mengajar")}
+                        </h3>
                     </div>
                     <div className="space-y-3">
                         {trainer.methods.map((method: string) => {
@@ -191,12 +229,14 @@ export function TrainerContentMenu({ trainer, setPreviewItem, activeTab = "info"
                 )}
 
                 {/* Sertifikasi */}
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 md:p-8 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 md:p-8 shadow-2xs">
                     <div className="flex items-center gap-2.5 mb-4">
                         <div className="w-8 h-8 rounded-xl bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center">
                             <Award className="h-4 w-4 text-yellow-600" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">{t("marketplace_detail.certifications", "Sertifikasi")}</h3>
+                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                            {locale === 'en' ? "CERTIFICATIONS" : t("marketplace_detail.certifications", "Sertifikasi")}
+                        </h3>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                         {trainer.certifications.map((cert: any, idx: number) => (
@@ -236,12 +276,14 @@ export function TrainerContentMenu({ trainer, setPreviewItem, activeTab = "info"
 
             {/* ===== TAB: GALERI ===== */}
             <TabsContent value="gallery" className="mt-0">
-                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/80 dark:border-slate-700 p-6 md:p-8 shadow-sm">
+                <div className="bg-white dark:bg-gray-800 rounded-2xl border border-slate-200/90 dark:border-slate-700 p-5 sm:p-6 md:p-8 shadow-2xs">
                     <div className="flex items-center gap-2.5 mb-4">
                         <div className="w-8 h-8 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
                             <Sparkles className="h-4 w-4 text-orange-600" />
                         </div>
-                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">{t("marketplace_detail.tab_galeri", "Galeri")}</h3>
+                        <h3 className="text-sm font-black text-slate-900 dark:text-white uppercase tracking-wider">
+                            {locale === 'en' ? "GALLERY" : t("marketplace_detail.tab_galeri", "Galeri")}
+                        </h3>
                     </div>
 
                     {trainer.gallery && trainer.gallery.length > 0 ? (

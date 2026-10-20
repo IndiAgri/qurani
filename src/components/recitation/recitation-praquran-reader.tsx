@@ -126,8 +126,8 @@ export function RecitationPraQuranReader({
   return (
     <div className="flex flex-col min-h-screen w-full bg-[#f8fafc] select-none">
       {/* Top Action Bar */}
-      <div className="flex items-center justify-between px-6 py-3.5 border-b border-gray-200/80 bg-white sticky top-0 z-30 shadow-2xs">
-        <div className="flex items-center gap-3">
+      <div className="flex items-center justify-between px-3.5 sm:px-6 py-2.5 sm:py-3.5 border-b border-gray-200/80 bg-white sticky top-0 z-30 shadow-2xs">
+        <div className="flex items-center gap-2 sm:gap-3">
           <button
             type="button"
             onClick={toggleSidebar}
@@ -137,7 +137,7 @@ export function RecitationPraQuranReader({
             <PanelLeft className="size-5" />
           </button>
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
+            <span className="hidden sm:inline-block px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/80">
               Pra Quran
             </span>
             <span className="text-xs font-bold text-gray-800">{jilid.name}</span>
@@ -148,7 +148,7 @@ export function RecitationPraQuranReader({
         <button
           type="button"
           onClick={handleFinish}
-          className="px-8 py-2 rounded-xl bg-[#00875a] hover:bg-[#00754e] text-white font-medium text-xs sm:text-sm shadow-2xs transition cursor-pointer"
+          className="px-5 sm:px-8 py-1.5 sm:py-2 rounded-xl bg-[#00875a] hover:bg-[#00754e] active:scale-95 text-white font-medium text-xs sm:text-sm shadow-2xs transition cursor-pointer"
         >
           Finish
         </button>

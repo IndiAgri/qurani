@@ -91,7 +91,7 @@ export function TeacherSubpageView({
   const Icon = config.icon;
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 py-6 sm:py-8 font-sans space-y-6">
+    <div className="w-full px-6 lg:px-8 py-6 font-sans space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-gray-100 dark:border-slate-800">
         <div className="flex items-center gap-3">
           <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 text-[#00875a]">

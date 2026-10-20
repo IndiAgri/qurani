@@ -21,10 +21,8 @@ export default async function TeacherDetailPage({
         <AppSidebar />
         <SidebarInset className="flex flex-col flex-1 min-w-0 bg-[#f8fafc]">
           <DashboardHeader />
-          <div className="flex-1 flex justify-center w-full">
-            <div className="max-w-[1600px] w-full p-4 sm:p-6">
-              <MarketplaceDetailPage id={id} />
-            </div>
+          <div className="flex-1 w-full">
+            <MarketplaceDetailPage id={id} />
           </div>
         </SidebarInset>
       </div>

@@ -2,8 +2,8 @@ import { DashboardLayout } from "@/components/layouts/dashboard-layout";
 import { AboutView } from "@/components/pages/about-view";
 
 export const metadata = {
-  title: "Tentang Qurani | Platform Edukasi Al-Qur'an",
-  description: "Kenali lebih dekat misi, visi, dan keunggulan ekosistem Qurani.",
+  title: "Tentang | Qurani",
+  description: "Modern Quran application - Read, listen, and learn the Holy Quran with advanced features and beautiful interface",
 };
 
 export default function IdAboutPage() {

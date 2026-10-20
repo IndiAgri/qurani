@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/select";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { useAuth } from "@/components/providers/auth-provider";
+import { cn } from "@/lib/utils";
 
 interface MarkedErrorItem {
   ayahNumber: number;
@@ -56,8 +57,10 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
   const [startVerse, setStartVerse] = React.useState("1");
   const [endSurahId, setEndSurahId] = React.useState("1");
   const [endVerse, setEndVerse] = React.useState("7");
-  const [conclusion, setConclusion] = React.useState("Good");
+  const [conclusion, setConclusion] = React.useState("");
+  const [hasConclusionError, setHasConclusionError] = React.useState(false);
   const [notes, setNotes] = React.useState("");
+  const [specialNotes, setSpecialNotes] = React.useState("");
 
   React.useEffect(() => {
     try {
@@ -70,14 +73,6 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
         setEndSurahId(String(parsed.surahId || 1));
         setStartVerse(String(parsed.startVerse || 1));
         setEndVerse(String(parsed.endVerse || 7));
-
-        // Auto recommend conclusion based on error count
-        const errorCount = Object.keys(parsed.markedErrors || {}).length;
-        if (errorCount === 0) setConclusion("Excellent");
-        else if (errorCount === 1) setConclusion("Very Good");
-        else if (errorCount <= 3) setConclusion("Good");
-        else if (errorCount <= 5) setConclusion("Pass");
-        else setConclusion("Not Pass");
       }
     } catch {}
   }, []);
@@ -121,6 +116,11 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
   }, [errorList]);
 
   const handleSave = () => {
+    if (!conclusion) {
+      setHasConclusionError(true);
+      return;
+    }
+
     const now = new Date();
     const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agt", "Sep", "Okt", "Nov", "Des"];
     const formattedDate = `${now.getDate()} ${months[now.getMonth()]} ${now.getFullYear()}, ${String(now.getHours()).padStart(2, "0")}.${String(now.getMinutes()).padStart(2, "0")}`;
@@ -155,8 +155,8 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
       endVerse: String(endVerse || "7"),
       juz: (draft as any)?.juzId || 1,
       page: (draft as any)?.page || 1,
-      result: conclusion,
-      conclusion: conclusion,
+      result: conclusion || "Pass",
+      conclusion: conclusion || "Pass",
       statusGrade:
         conclusion === "Excellent" || conclusion === "Very Good"
           ? "mumtaz"
@@ -165,7 +165,7 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
           : "jayyid",
       signature: "verified",
       isSigned: true,
-      notes: notes.trim() || "-",
+      notes: [notes.trim(), specialNotes.trim()].filter(Boolean).join(" • ") || "-",
       duration: "4m 15s",
       markedErrors: errorList,
       markedAyahErrors: draft?.markedAyahErrors ? Object.values(draft.markedAyahErrors) : [],
@@ -321,9 +321,24 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
           {/* Row 4: Conclusion & Notes (Directly matching screenshot) */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-medium text-gray-700">Conclusion</label>
-              <Select value={conclusion} onValueChange={(val) => val && setConclusion(val)}>
-                <SelectTrigger className="w-full text-xs sm:text-sm h-11 rounded-xl bg-white border-gray-200">
+              <label className={cn("text-xs font-medium", hasConclusionError ? "text-red-500" : "text-gray-700")}>
+                Conclusion
+              </label>
+              <Select
+                value={conclusion}
+                onValueChange={(val) => {
+                  if (val) {
+                    setConclusion(val);
+                    setHasConclusionError(false);
+                  }
+                }}
+              >
+                <SelectTrigger
+                  className={cn(
+                    "w-full text-xs sm:text-sm h-11 rounded-xl bg-white",
+                    hasConclusionError ? "border-red-500 ring-1 ring-red-500" : "border-gray-200"
+                  )}
+                >
                   <SelectValue placeholder="Select Conclusion" />
                 </SelectTrigger>
                 <SelectContent className="rounded-xl bg-white">
@@ -334,6 +349,9 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
                   ))}
                 </SelectContent>
               </Select>
+              {hasConclusionError && (
+                <p className="text-xs text-red-500 mt-1">Conclusion is required</p>
+              )}
             </div>
 
             <div className="space-y-1.5">
@@ -423,6 +441,54 @@ export function RecitationRecap({ locale = "en" }: { locale?: string }) {
                 ))}
               </div>
             )}
+
+            {/* Bottom Conclusion & Notes in Summary Card matching reference screenshot */}
+            <div className="space-y-4 pt-4 border-t border-gray-100">
+              <div className="space-y-1.5">
+                <label className={cn("text-xs font-medium", hasConclusionError ? "text-red-500" : "text-gray-700")}>
+                  Conclusion
+                </label>
+                <Select
+                  value={conclusion}
+                  onValueChange={(val) => {
+                    if (val) {
+                      setConclusion(val);
+                      setHasConclusionError(false);
+                    }
+                  }}
+                >
+                  <SelectTrigger
+                    className={cn(
+                      "w-full text-xs sm:text-sm h-11 rounded-xl bg-white",
+                      hasConclusionError ? "border-red-500 ring-1 ring-red-500" : "border-gray-200"
+                    )}
+                  >
+                    <SelectValue placeholder="Select Conclusion" />
+                  </SelectTrigger>
+                  <SelectContent className="rounded-xl bg-white">
+                    {CONCLUSIONS.map((c) => (
+                      <SelectItem key={c.value} value={c.value} className="text-xs sm:text-sm">
+                        {c.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {hasConclusionError && (
+                  <p className="text-xs text-red-500 mt-1">Conclusion is required</p>
+                )}
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-gray-700">Notes</label>
+                <textarea
+                  value={specialNotes}
+                  onChange={(e) => setSpecialNotes(e.target.value)}
+                  placeholder="Special Notes"
+                  rows={4}
+                  className="w-full p-4 rounded-xl border border-gray-200 bg-white text-xs sm:text-sm text-gray-900 focus:outline-none focus:ring-1 focus:ring-[#00875a] resize-y placeholder:text-gray-400"
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

@@ -3,8 +3,9 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import {
   Clock, CheckCircle2, XCircle, CalendarDays, Award, User, MapPin, BookOpen,
-  ChevronDown, Check, Globe, DollarSign, Briefcase, Video, Play, Link2, X, Info, Tag, FileText
+  ChevronDown, Check, Globe, DollarSign, Briefcase, Video, Play, Link2, X, Info, Tag, FileText, Mail
 } from "lucide-react";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,6 +26,7 @@ import {
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/components/providers/auth-provider";
 
 
 
@@ -138,6 +140,48 @@ export function StatusPengajuan({
   const [localCancelReason, setLocalCancelReason] = useState("");
   const [isKonfirmasiDone, setIsKonfirmasiDone] = useState(false);
   const [rescheduleData, setRescheduleData] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+
+  const { user } = useAuth();
+  let candidateEmail = user?.email || "";
+  if (!candidateEmail && typeof window !== "undefined") {
+    try {
+      const sp = localStorage.getItem("qurani_student_profile");
+      if (sp) candidateEmail = JSON.parse(sp).email;
+    } catch {}
+  }
+  if (!candidateEmail) candidateEmail = "calon.guru@gmail.com";
+
+  const handleSendEmail = async () => {
+    setIsSendingEmail(true);
+    try {
+      const res = await fetch("/api/send-interview-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          toEmail: candidateEmail,
+          teacherName: user?.name || "Calon Pengajar",
+          interviewDate: "Minggu, 12 Juli 2026",
+          interviewTime: "12.00 – 13.00 WIB",
+          meetLink: "https://us05web.zoom.us/j/8286064247?pwd=CWNog9Kh0E96B6LYRS0NMerOuOqPQW.1",
+          examiner: "Hamid Al-Hafidz (Tim Penyeleksi Qurani)",
+          notes: "Persiapkan hafalan surat pendek dan bacaan tartil makharijul huruf.",
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        toast.success(`Email undangan wawancara terkirim ke ${candidateEmail}!`, {
+          description: "Silakan periksa kotak masuk (inbox) atau spam email Anda.",
+        });
+      } else {
+        toast.error(data.message || "Gagal mengirim email.");
+      }
+    } catch {
+      toast.error("Terjadi kendala saat mengirim email.");
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
 
   const isCanceled = isCanceledProp || internalIsCanceled;
 
@@ -714,6 +758,43 @@ export function StatusPengajuan({
               <p className={cn("text-[13px] text-slate-600 leading-relaxed")}>
                 {activeConfig.desc}
               </p>
+            )}
+
+            {/* Email Notification for Interview / Seleksi */}
+            {(status === 'jadwal_seleksi' || status === 'konfirmasi') && (
+              <div className="mt-3 p-4 bg-emerald-50/80 border border-emerald-200/80 rounded-2xl flex flex-col gap-3 text-slate-700 shadow-xs">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-100 flex items-center justify-center shrink-0 mt-0.5 border border-emerald-200/60">
+                    <Mail className="w-4 h-4 text-emerald-700" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="text-xs font-bold text-slate-900">Undangan Wawancara Dikirim ke Email</span>
+                      <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full inline-flex items-center gap-1">
+                        <Check className="w-3 h-3 text-emerald-600" />
+                        Email Terkirim
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-slate-600 mt-1 leading-relaxed">
+                      Jadwal wawancara, link temu Zoom / Google Meet, dan materi tes bacaan telah dikirimkan ke <strong>{candidateEmail}</strong>. Silakan periksa folder <strong>Kotak Masuk (Inbox)</strong> atau <strong>Spam</strong>.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between pt-2.5 border-t border-emerald-100 text-[11px]">
+                  <span className="text-slate-500 flex items-center gap-1 font-medium">
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
+                    Notifikasi email aktif ke {candidateEmail}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={isSendingEmail}
+                    onClick={handleSendEmail}
+                    className="text-emerald-700 hover:text-emerald-800 font-bold hover:underline cursor-pointer disabled:opacity-50"
+                  >
+                    {isSendingEmail ? "Mengirim Email..." : "Kirim Ulang Email"}
+                  </button>
+                </div>
+              </div>
             )}
 
             {status === 'pending' && isCanceled && (
